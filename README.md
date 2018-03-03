@@ -9,6 +9,14 @@ but, if you really want to, here's how
 
 ### installing
 
+I guess do this?
+
+```
+$ go get -u github.com/davethegr8/bad-package-manager/cmd/bpm
+```
+
+you'll then have a `bpm` executable in your `$GOPATH/bin`
+
 ### using
 
 make a file called `dependencies.json` that looks like this:
