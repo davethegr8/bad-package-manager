@@ -3,7 +3,7 @@
 it's a package manager that just checks out what you tell it to
 
 > you probably shouldn't use this  
->  - _me_
+> \- _me_
 
 but, if you really want to, here's how
 
