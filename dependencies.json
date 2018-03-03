@@ -1,0 +1,6 @@
+{
+  "require": {
+    "deps/prewarmer": "git@git.corp.bigfishgames.com:tools/prewarmer.git",
+    "deps/modules/directory": "git@git.corp.bigfishgames.com:tools/directory.git#master"
+  }
+}
