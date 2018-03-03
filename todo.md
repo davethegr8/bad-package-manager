@@ -1,4 +1,2 @@
-- try to not change directories so much
-- don't force running in `pwd`
-- shallow clones
+
 - 

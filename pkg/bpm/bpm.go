@@ -2,8 +2,11 @@ package bpm
 
 import (
     "encoding/json"
-    "fmt"
+    // "fmt"
     "io/ioutil"
+    "log"
+    "os"
+    "os/exec"
     "path/filepath"
     "strings"
 )
@@ -19,11 +22,93 @@ type Dependency struct {
 }
 
 func Process(file string) {
-    fmt.Println(file)
-    // basedir of file
+    // fmt.Println(file)
 
     deps := parse(file)
-    fmt.Println(deps)
+
+    fetch(file, deps)
+}
+
+func fetch(file string, deps []Dependency) {
+    // fmt.Println("in fetch()")
+
+    dir := filepath.Dir(file);
+    // fmt.Println(dir)
+
+    // mode of dir
+    fi, err := os.Lstat(dir)
+    if err != nil {
+        panic(err)
+    }
+    mode := fi.Mode()
+
+    for _, d := range deps {
+        base := filepath.Base(d.Dest)
+        parent := filepath.Dir(d.Dest)
+
+        log.Println("working on", d.Src)
+
+        // fmt.Println(parent, base)
+
+        if _, err := os.Stat(parent); os.IsNotExist(err) {
+            err := os.MkdirAll(parent, mode)
+
+            if err != nil {
+                panic(err)
+            }
+        }
+
+        if _, err := os.Stat(parent + "/" + base); os.IsNotExist(err) {
+            log.Println("cloning", d.Src)
+            // clone repo into base
+            cmd := exec.Command("git", "clone", d.Src, dir + "/" + parent + "/" + base, "--depth", "1")
+            // fmt.Println(cmd)
+            err := cmd.Start()
+            if err != nil {
+                panic(err)
+            }
+        } else if _, err := os.Stat(parent + "/" + base + "/.git"); os.IsNotExist(err) {
+            panic("'" + parent + "/" + base + "' is not a git repo")
+        } else {
+            // , parent + "/" + base
+            cmd := exec.Command("git", "remote", "-v")
+            cmd.Dir = parent + "/" + base
+            // fmt.Println(cmd)
+
+            out, err := cmd.Output()
+            // fmt.Println("output:", string(out))
+
+            if err != nil {
+                panic(err)
+            }
+
+            same := strings.Contains(string(out), d.Src)
+            // fmt.Println("same?", d.Src, same)
+
+            if !same {
+                panic(parent + "/" + base + " is not " + d.Src)
+                continue
+            }
+
+            log.Println("fetching latest")
+            cmd = exec.Command("git", "fetch", "--all")
+            cmd.Dir = parent + "/" + base
+            // fmt.Println(cmd)
+            cmd.Run()
+        }
+
+        cmd := exec.Command("git", "checkout", "-q", d.Commitish)
+        cmd.Dir = parent + "/" + base
+        // fmt.Println(cmd)
+        cmd.Run()
+
+        cmd = exec.Command("git", "pull")
+        cmd.Dir = parent + "/" + base
+        // fmt.Println(cmd)
+        cmd.Run()
+
+        log.Println("getting", d.Commitish)
+    }
 }
 
 func parse(file string) ([]Dependency) {

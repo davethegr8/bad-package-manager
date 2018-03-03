@@ -29,8 +29,6 @@ func errorMessage(message string) bool {
 }
 
 func main() {
-    fmt.Println("hello world")
-
     flag.Parse()
 
     ok := true
@@ -51,7 +49,7 @@ func main() {
 }
 
 func resolvePath(file string) (absfile string) {
-    fmt.Println(file)
+    // fmt.Println(file)
 
     if filepath.IsAbs(file) {
         return file
