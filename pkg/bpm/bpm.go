@@ -4,6 +4,7 @@ import (
     "encoding/json"
     "fmt"
     "io/ioutil"
+    "path/filepath"
     "strings"
 )
 
@@ -19,6 +20,8 @@ type Dependency struct {
 
 func Process(file string) {
     fmt.Println(file)
+    // basedir of file
+
     deps := parse(file)
     fmt.Println(deps)
 }

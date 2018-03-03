@@ -4,7 +4,7 @@ import (
     "flag"
     "fmt"
     "os"
-    // "path/filepath"
+    "path/filepath"
 
     "github.com/davethegr8/bad-package-manager/pkg/bpm"
 )
@@ -35,17 +35,7 @@ func main() {
 
     ok := true
 
-    if File == "" {
-        // try pwd/dependencies.json
-        dir, err := os.Getwd()
-        if err != nil {
-            panic(err)
-        }
-
-        File = dir + "/dependencies.json"
-    }
-
-    // fmt.Println(File)
+    File := resolvePath(File)
 
     if _, err := os.Stat(File); os.IsNotExist(err) {
         ok = errorMessage("ERROR: dependencies file does not exist")
@@ -58,4 +48,19 @@ func main() {
     }
 
     bpm.Process(File)
+}
+
+func resolvePath(file string) (absfile string) {
+    fmt.Println(file)
+
+    if filepath.IsAbs(file) {
+        return file
+    }
+
+    absfile, err := filepath.Abs(file)
+    if err != nil {
+        panic(err)
+    }
+
+    return absfile
 }
