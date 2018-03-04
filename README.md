@@ -1,6 +1,6 @@
 # bad package manger
 
-it's a package manager that just checks out what you tell it to
+it's a package manager that just checks out what you tell it to. it's less awful (maybe) than git submodules and much more terrible than actual package managers.
 
 > you probably shouldn't use this  
 > \- _me_
